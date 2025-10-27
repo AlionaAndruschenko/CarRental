@@ -1,0 +1,95 @@
+﻿@{
+    ViewData["Title"] = "To-Do List";
+}
+
+<link rel="stylesheet" href="~/css/todo.css" />
+
+<div class="todo-wrapper">
+    <h2 class="todo-title">Мій To-Do List</h2>
+
+    <div class="todo-input-container">
+        <input type="text" id="taskInput" placeholder="Введіть завдання..." />
+        <button id="addTaskBtn">Додати</button>
+    </div>
+
+    <ul id="taskList"></ul>
+</div>
+
+<script>
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+    const taskInput = document.getElementById("taskInput");
+    const taskList = document.getElementById("taskList");
+    const addTaskBtn = document.getElementById("addTaskBtn");
+
+    function renderTasks() {
+        taskList.innerHTML = "";
+        tasks.forEach((task, index) => {
+            const li = document.createElement("li");
+            li.draggable = true;
+            li.classList.add("task-item");
+            li.setAttribute("data-index", index);
+            li.innerHTML = `
+                <div class="task-content">
+                    <input type="checkbox" ${task.done ? "checked" : ""} onchange="toggleTask(${index})">
+                    <span class="${task.done ? 'done' : ''}">${task.text}</span>
+                </div>
+                <button class="delete-btn" onclick="deleteTask(${index})">✖</button>
+            `;
+            taskList.appendChild(li);
+        });
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+        addDragAndDrop();
+    }
+
+    addTaskBtn.addEventListener("click", () => {
+        const text = taskInput.value.trim();
+        if (text !== "") {
+            tasks.push({ text: text, done: false });
+            taskInput.value = "";
+            renderTasks();
+        }
+    });
+
+    function toggleTask(index) {
+        tasks[index].done = !tasks[index].done;
+        renderTasks();
+    }
+
+    function deleteTask(index) {
+        tasks.splice(index, 1);
+        renderTasks();
+    }
+
+    
+    function addDragAndDrop() {
+        const items = document.querySelectorAll(".task-item");
+        let dragged;
+
+        items.forEach(item => {
+            item.addEventListener("dragstart", e => {
+                dragged = item;
+                item.classList.add("dragging");
+            });
+
+            item.addEventListener("dragover", e => {
+                e.preventDefault();
+                const target = e.target.closest(".task-item");
+                if (target && target !== dragged) {
+                    const draggedIndex = +dragged.dataset.index;
+                    const targetIndex = +target.dataset.index;
+                    const temp = tasks[draggedIndex];
+                    tasks.splice(draggedIndex, 1);
+                    tasks.splice(targetIndex, 0, temp);
+                    renderTasks();
+                }
+            });
+
+            item.addEventListener("dragend", () => {
+                dragged.classList.remove("dragging");
+            });
+        });
+    }
+
+    renderTasks();
+</script>

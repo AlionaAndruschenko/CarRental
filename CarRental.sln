@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35818.85 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarRentalDomain", "CarRentalDomain\CarRentalDomain.csproj", "{4A720553-DCF5-4867-99F3-7083789B5D14}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarRentalInfrastructure", "CarRentalInfrastructure\CarRentalInfrastructure.csproj", "{18AFEA44-ADAD-4F9C-911F-F1AC0BAF4B36}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4A720553-DCF5-4867-99F3-7083789B5D14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A720553-DCF5-4867-99F3-7083789B5D14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A720553-DCF5-4867-99F3-7083789B5D14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A720553-DCF5-4867-99F3-7083789B5D14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18AFEA44-ADAD-4F9C-911F-F1AC0BAF4B36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18AFEA44-ADAD-4F9C-911F-F1AC0BAF4B36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18AFEA44-ADAD-4F9C-911F-F1AC0BAF4B36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18AFEA44-ADAD-4F9C-911F-F1AC0BAF4B36}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0838B6E8-AE8F-48D0-8B71-7448FEE01D7E}
+	EndGlobalSection
+EndGlobal

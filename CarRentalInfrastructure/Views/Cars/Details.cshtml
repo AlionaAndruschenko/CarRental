@@ -1,0 +1,56 @@
+﻿@model CarRentalDomain.Model.Car
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1 style="color: #333; text-align: center;">Details</h1>
+
+<div class="row justify-content-center">
+    <div class="col-md-6" style="background-color: #f9f9f9; padding: 20px; border-radius: 10px; color: #333;">
+        <h4 style="color: #1e3c72;">Car</h4>
+        <hr style="border-color: #ccc;" />
+        <dl class="row">
+            <dt class="col-sm-2" style="font-weight: bold; color: #1e3c72;">
+                @Html.DisplayNameFor(model => model.Make)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Make)
+            </dd>
+            <dt class="col-sm-2" style="font-weight: bold; color: #1e3c72;">
+                @Html.DisplayNameFor(model => model.Model)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Model)
+            </dd>
+            <dt class="col-sm-2" style="font-weight: bold; color: #1e3c72;">
+                @Html.DisplayNameFor(model => model.Year)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Year)
+            </dd>
+            <dt class="col-sm-2" style="font-weight: bold; color: #1e3c72;">
+                @Html.DisplayNameFor(model => model.LicensePlate)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.LicensePlate)
+            </dd>
+            <dt class="col-sm-2" style="font-weight: bold; color: #1e3c72;">
+                @Html.DisplayNameFor(model => model.PhotoPath)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.PhotoPath)
+            </dd>
+            <dt class="col-sm-2" style="font-weight: bold; color: #1e3c72;">
+                @Html.DisplayNameFor(model => model.Category)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Category.Name)
+            </dd>
+        </dl>
+    </div>
+</div>
+<div class="mt-3 text-center">
+    <a asp-action="Edit" asp-route-id="@Model?.Id" style="color: #d4a373; text-decoration: none; padding: 10px 20px; display: inline-block;">Edit</a> |
+    <a asp-action="Index" style="color: #d4a373; text-decoration: none; padding: 10px 20px; display: inline-block;">Back to List</a>
+</div>

@@ -1,0 +1,189 @@
+﻿@model IEnumerable<CarRentalDomain.Model.Customer>
+
+@{
+    ViewData["Title"] = "Клієнти";
+}
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        color: #212529;
+    }
+
+    .premium-header {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+
+    .premium-card {
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 1.5rem;
+        background: white;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .premium-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+            border-color: #c5a880;
+        }
+
+    .customer-info h5 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 0.25rem;
+    }
+
+    .customer-info p {
+        margin: 0.2rem 0;
+        font-size: 0.95rem;
+        color: #495057;
+    }
+
+    .customer-info .text-muted {
+        color: #6c757d !important;
+    }
+
+    .customer-actions .btn {
+        margin-left: 0.5rem;
+        font-size: 0.85rem;
+        padding: 0.35rem 0.7rem;
+        border-radius: 6px;
+    }
+
+    .btn-edit {
+        border-color: #ffc107;
+        color: #212529;
+    }
+
+        .btn-edit:hover {
+            background-color: #ffc107;
+            color: white;
+        }
+
+    .btn-details {
+        border-color: #20c997;
+        color: #212529;
+    }
+
+        .btn-details:hover {
+            background-color: #20c997;
+            color: white;
+        }
+
+    .btn-delete {
+        border-color: #dc3545;
+        color: #212529;
+    }
+
+        .btn-delete:hover {
+            background-color: #dc3545;
+            color: white;
+        }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background: white;
+        border-radius: 12px;
+        border: 1px dashed #e0e0e0;
+        margin-top: 1.5rem;
+    }
+
+    .btn-add {
+        background: linear-gradient(135deg, #c5a880 0%, #a68a64 100%);
+        border: none;
+        color: white;
+        font-weight: 500;
+        padding: 0.6rem 1.5rem;
+        font-size: 1rem;
+        border-radius: 8px;
+    }
+
+        .btn-add:hover {
+            background: linear-gradient(135deg, #a68a64 0%, #8a704f 100%);
+            transform: scale(1.03);
+        }
+
+    .btn-back {
+        border: 1px solid #ced4da;
+        color: #495057;
+        padding: 0.5rem 1.2rem;
+    }
+
+        .btn-back:hover {
+            background-color: #f8f9fa;
+            color: #212529;
+        }
+</style>
+
+<div class="container py-4">
+    <div class="premium-header text-center">
+        <div class="container">
+            <h2>Наші клієнти</h2>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div></div>
+        <a asp-action="Create" class="btn btn-add">
+            <i class="bi bi-person-plus me-1"></i> Додати клієнта
+        </a>
+    </div>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="empty-state">
+            <i class="bi bi-people" style="font-size: 3rem; color: #c5a880;"></i>
+            <h4 class="mt-3">Клієнтів не знайдено</h4>
+            <p class="text-muted">Додайте першого клієнта, щоб почати роботу з орендами.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row g-3">
+            @foreach (var item in Model)
+            {
+                <div class="col-12">
+                    <div class="premium-card">
+                        <div class="customer-info">
+                            <h5>@item.FullName</h5>
+                            <p><i class="bi bi-telephone me-1 text-muted"></i> @item.PhoneNumber</p>
+                            <p><i class="bi bi-envelope me-1 text-muted"></i> @item.Email</p>
+                        </div>
+                        <div class="customer-actions">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-edit">
+                                <i class="bi bi-pencil"></i> Редагувати
+                            </a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-details">
+                                <i class="bi bi-eye"></i> Деталі
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-delete">
+                                <i class="bi bi-trash"></i> Видалити
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <div class="mt-5 text-center">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-back">
+            <i class="bi bi-house me-1"></i> На головну
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+}

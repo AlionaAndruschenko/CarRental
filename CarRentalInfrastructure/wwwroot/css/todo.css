@@ -1,0 +1,116 @@
+﻿.todo-wrapper {
+    max-width: 500px;
+    margin: 50px auto;
+    background: #111;
+    color: #fff;
+    border-radius: 12px;
+    padding: 25px 30px;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
+}
+
+.todo-title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+    color: #a68a64; /* золотий акцент */
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.todo-input-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+#taskInput {
+    width: 70%;
+    padding: 8px 10px;
+    border: none;
+    border-radius: 6px;
+    background: #222;
+    color: #fff;
+    outline: none;
+}
+
+    #taskInput::placeholder {
+        color: #888;
+    }
+
+#addTaskBtn {
+    background: #a68a64;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+    #addTaskBtn:hover {
+        background: #c5a880;
+    }
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+.task-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1b1b1b;
+    margin-bottom: 8px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    transition: transform 0.2s ease, background 0.3s;
+    cursor: grab;
+}
+
+    .task-item:hover {
+        background: #2b2b2b;
+    }
+
+    .task-item.dragging {
+        opacity: 0.6;
+        transform: scale(1.05);
+    }
+
+.task-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+    .task-content span.done {
+        text-decoration: line-through;
+        color: #888;
+    }
+
+.delete-btn {
+    background: transparent;
+    border: none;
+    color: #d9534f;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+    .delete-btn:hover {
+        color: #ff6666;
+    }
+
+/* адаптив */
+@@media (max-width: 600px) {
+    .todo-wrapper {
+        width: 90%;
+        padding: 20px;
+    }
+
+    #taskInput {
+        width: 65%;
+    }
+}
