@@ -176,6 +176,20 @@ namespace CarRentalInfrastructure.Controllers
             return View(car);
         }
 
+        // GET: Cars/Landing/5
+        public async Task<IActionResult> Landing(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var car = await _context.Cars
+                .Include(c => c.Category)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (car == null) return NotFound();
+
+            return View(car);
+        }
+
         // GET: Cars/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {

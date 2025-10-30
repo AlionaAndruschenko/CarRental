@@ -1,0 +1,166 @@
+﻿@model CarRentalDomain.Model.Car
+@{
+    ViewData["Title"] = $"{Model.Make} {Model.Model}";
+    var img = string.IsNullOrWhiteSpace(Model.PhotoPath) ? "/images/cars/placeholder.jpg" : Model.PhotoPath;
+}
+
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-semibold" href="#">@Model.Make @Model.Model</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#lpNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="lpNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="#overview">Огляд</a></li>
+                <li class="nav-item"><a class="nav-link" href="#specs">Характеристики</a></li>
+                <li class="nav-item"><a class="nav-link" href="#gallery">Галерея</a></li>
+                <li class="nav-item"><a class="nav-link" href="#cta">Бронювання</a></li>
+                <li class="nav-item"><a class="nav-link" href="#contact">Контакти</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<header id="overview" class="py-5 bg-dark text-white">
+    <div class="container">
+        <div class="row align-items-center g-4">
+            <div class="col-12 col-lg-6">
+                <img src="@img" class="img-fluid rounded shadow" alt="@Model.Make @Model.Model" onerror="this.style.display='none'">
+            </div>
+            <div class="col-12 col-lg-6">
+                <h1 class="display-6 fw-bold">@Model.Make @Model.Model</h1>
+                <p class="lead mb-2">
+                    <span class="me-2">Рік: <strong>@Model.Year</strong></span>
+                    @if (Model.Category != null)
+                    {
+                        <span class="badge bg-secondary">@Model.Category.Name</span>
+                    }
+                </p>
+                <p class="text-white-50">Надійне авто з нашого автопарку, доступне для щоденної оренди. Оформлення за 5 хвилин.</p>
+                <a href="#cta" class="btn btn-gold btn-lg">Забронювати</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+<section id="specs" class="py-5 bg-light">
+    <div class="container">
+        <h2 class="h3 mb-4">Характеристики</h2>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <ul class="list-group shadow-sm">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Марка/модель <span class="fw-semibold">@Model.Make @Model.Model</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Рік <span class="fw-semibold">@Model.Year</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Номерний знак <span class="fw-semibold">@Model.LicensePlate</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Категорія <span class="fw-semibold">@Model.Category?.Name</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Опис</h5>
+                        <p class="mb-0">Комфортне, охайне авто з повним технічним обслуговуванням. Ідеальне для поїздок містом та подорожей.</p>
+                      
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section id="gallery" class="py-5">
+    <div class="container">
+        <h2 class="h3 mb-4">Галерея</h2>
+        <div class="row g-3">
+            <div class="col-12 col-md-6 col-lg-4">
+                <img src="@img" class="img-fluid rounded shadow-sm" alt="@Model.Make @Model.Model" onerror="this.style.display='none'">
+            </div>
+            
+        </div>
+    </div>
+</section>
+
+
+<section id="cta" class="py-5 bg-body-tertiary">
+    <div class="container">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body d-flex flex-column flex-md-row align-items-md-center">
+                <div class="me-md-4 mb-3 mb-md-0">
+                    <div class="h4 mb-1">Готові забронювати?</div>
+                    <small class="text-muted">Оберіть дати на наступному кроці.</small>
+                </div>
+                <a asp-controller="Rentals" asp-action="Create" asp-route-carId="@Model.Id" class="btn btn-gold btn-lg ms-md-auto">Перейти до бронювання</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<footer id="contact" class="py-5 bg-dark text-white">
+    <div class="container">
+        <h2 class="h4 mb-3">Контакти</h2>
+        <div class="row">
+            <div class="col-md-6">
+                <p class="mb-1">Телефон: <a href="tel:+380501940508" class="link-light">+380 50 194 0508</a></p>
+                <p class="mb-1">Email: <a href="mailto:carrent@gmail.com" class="link-light">carrent@gmail.com</a></p>
+                <p class="mb-0">Адреса: м. Київ, вул. Прикладна, 1</p>
+            </div>
+            <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                <a href="https://t.me/carrentallnotifyybot" class="btn btn-outline-light btn-sm me-2">Telegram</a>
+                <a href="viber://chat?number=%2B380000000000" class="btn btn-outline-light btn-sm">Viber</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+<a href="#contact" class="position-fixed bottom-0 end-0 m-3 btn btn-gold btn-lg shadow">Зв’язатись</a>
+<style>
+    .btn.btn-gold {
+        background-color: #8a704f;
+        border-color: #a68a64;
+        color: #FFF;
+    }
+
+        .btn.btn-gold:hover {
+            background-color: #8a704f;
+            border-color: #a68a64;
+            color: #FFF;
+        }
+
+        .btn.btn-gold:active {
+            background-color: #8a704f;
+            border-color: #a68a64;
+            color: #FFF;
+        }
+
+        .btn.btn-gold:focus {
+            box-shadow: 0 0 0 .25rem rgba(212,175,55,.35);
+        }
+</style>
+
+
+<script>
+    document.querySelectorAll('a.nav-link[href^="#"], a[href="#contact"]').forEach(a=>{
+      a.addEventListener('click', e=>{
+        const href = a.getAttribute('href');
+        if(href && href.startsWith('#')){
+          e.preventDefault();
+          document.querySelector(href)?.scrollIntoView({behavior:'smooth'});
+        }
+      });
+    });
+</script>

@@ -247,12 +247,14 @@
                                 <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-edit">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-details">
-                                    <i class="bi bi-eye"></i>
+                                <a asp-action="Landing" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm">
+                                    Деталі
                                 </a>
+
                                 <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-delete">
                                     <i class="bi bi-trash"></i>
                                 </a>
+
                             </div>
                         </div>
                     </div>
