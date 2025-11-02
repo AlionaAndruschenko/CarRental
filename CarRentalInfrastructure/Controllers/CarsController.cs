@@ -25,7 +25,7 @@ namespace CarRentalInfrastructure.Controllers
 
        
         // GET: Cars
-        // GET: Cars?categoryId=1&categoryName=Економ
+    
         public async Task<IActionResult> Index(int? categoryId, string? categoryName)
         {
             if (categoryId.HasValue)
@@ -54,6 +54,7 @@ namespace CarRentalInfrastructure.Controllers
             if (id == null)
             {
                 return NotFound();
+
             }
 
             var car = await _context.Cars
@@ -77,7 +78,7 @@ namespace CarRentalInfrastructure.Controllers
         // POST: Cars/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Make,Model,Year,LicensePlate,CategoryId")] Car car, IFormFile? Photo)
+        public async Task<IActionResult> Create([Bind("Make,Model,Year,LicensePlate,CategoryId,Latitude,Longitude,Status")] Car car, IFormFile? Photo)
         {
             if (ModelState.IsValid)
             {
@@ -128,7 +129,7 @@ namespace CarRentalInfrastructure.Controllers
         // POST: Cars/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Make,Model,Year,LicensePlate,PhotoPath,CategoryId")] Car car, IFormFile? Photo)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Make,Model,Year,LicensePlate,PhotoPath,CategoryId,Latitude,Longitude,Status")] Car car, IFormFile? Photo)
         {
             if (id != car.Id)
             {
@@ -223,6 +224,46 @@ namespace CarRentalInfrastructure.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+        // GET: Cars/Map
+        [HttpGet]
+        public IActionResult Map()
+        {
+            ViewBag.Categories = _context.Categories
+                .OrderBy(c => c.Name)
+                .Select(c => c.Name)
+                .ToList();
+            return View();
+        }
+
+        // GET: /Cars/Locations?category=Premium
+        [HttpGet]
+        public async Task<IActionResult> Locations(string? category)
+        {
+            var q = _context.Cars
+                .Include(c => c.Category)
+                .AsNoTracking()
+                .AsQueryable();
+
+            // лише ті, що мають координати
+            q = q.Where(c => c.Latitude != null && c.Longitude != null);
+
+            if (!string.IsNullOrWhiteSpace(category))
+                q = q.Where(c => c.Category != null && c.Category.Name == category);
+
+            var data = await q.Select(c => new
+            {
+                id = c.Id,
+                title = c.Make + " " + c.Model,
+                category = c.Category != null ? c.Category.Name : "",
+                year = c.Year,
+                lat = c.Latitude,
+                lng = c.Longitude,
+                photo = c.PhotoPath
+            }).ToListAsync();
+
+            return Json(data);
+        }
+
 
         private bool CarExists(int id)
         {

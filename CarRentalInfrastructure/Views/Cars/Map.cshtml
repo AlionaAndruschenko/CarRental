@@ -1,0 +1,194 @@
+﻿@{
+    ViewData["Title"] = "Мапа автопарку";
+    var categories = (List<string>)ViewBag.Categories;
+}
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+
+<style>
+    .map-wrap {
+        background: #111;
+        border: 1px solid rgba(255,255,255,.06);
+        border-radius: 14px;
+        box-shadow: 0 8px 30px rgba(0,0,0,.5);
+        padding: 14px;
+        margin-top: 20px;
+    }
+
+    #map {
+        height: 600px;
+        border-radius: 10px;
+    }
+
+    .filters {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(160px, 1fr));
+        gap: 10px;
+        align-items: end;
+        margin-bottom: 8px;
+    }
+
+        .filters .form-group label {
+            color: #eee;
+        }
+
+        .filters input, .filters select {
+            background: #0f0f0f;
+            color: #eee;
+            border: 1px solid #2b2b2b;
+            border-radius: 8px;
+            padding: 8px 10px;
+        }
+
+    .btn-gold {
+        background: #c89d5d;
+        color: #0b0b0b;
+        border: none;
+        padding: 9px 14px;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: .15s;
+    }
+
+        .btn-gold:hover {
+            background: #e0b67a;
+            transform: translateY(-2px);
+        }
+
+    .leaflet-popup-content-wrapper {
+        background: #151515;
+        color: #eee;
+        border: 1px solid rgba(255,255,255,.06);
+    }
+
+    .leaflet-popup-tip {
+        background: #151515;
+    }
+</style>
+
+<div class="map-wrap">
+    <h2 style="color:#fff; margin-bottom:10px;">📍 Розташування автомобілів</h2>
+
+    <div class="filters">
+        <div class="form-group">
+            <label>Категорія</label>
+            <select id="fCategory">
+                <option value="">Всі</option>
+                @foreach (var c in categories)
+                {
+                    <option value="@c">@c</option>
+                }
+            </select>
+        </div>
+
+        <div class="form-group" style="display:flex; gap:8px;">
+            <button id="applyBtn" class="btn-gold">Застосувати</button>
+            <button id="resetBtn" class="btn-gold" style="background:#2b2b2b;color:#eee;">Скинути</button>
+            <button id="fitBtn" class="btn-gold">Показати всі</button>
+        </div>
+    </div>
+
+    <div id="map" class="mt-3"></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+<script>
+    
+    const map = L.map('map', {
+        center: [49.0, 31.5],
+        zoom: 6,
+        zoomControl: true
+    });
+
+    L.tileLayer(
+        'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+        { attribution: '&copy; OpenStreetMap, &copy; CARTO', maxZoom: 20 }
+    ).addTo(map);
+
+    
+    let cluster = L.markerClusterGroup({
+        showCoverageOnHover: false,
+        maxClusterRadius: 50
+    }).addTo(map);
+
+   
+    const catColor = (cat) => {
+        if (!cat) return '#c89d5d';
+        const key = cat.toLowerCase();
+        if (key.includes('sport')) return '#e65c5c';
+        if (key.includes('premium')) return '#c89d5d';
+        return '#5fa8f5';
+    };
+
+    
+    function circleIcon(hex) {
+        const svg = encodeURIComponent(`
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28">
+              <circle cx="14" cy="14" r="10" fill="${hex}" stroke="white" stroke-width="2"/>
+            </svg>`);
+        return L.icon({
+            iconUrl: 'data:image/svg+xml;charset=UTF-8,' + svg,
+            iconSize: [28, 28],
+            iconAnchor: [14, 14],
+            popupAnchor: [0, -12]
+        });
+    }
+
+   
+    async function loadData() {
+        const params = new URLSearchParams();
+        const cat = document.getElementById('fCategory').value;
+        if (cat) params.append('category', cat);
+
+        const url = '/Cars/Locations' + (params.toString() ? '?' + params.toString() : '');
+        const res = await fetch(url);
+        const data = await res.json();
+
+        renderMarkers(data);
+    }
+
+    function renderMarkers(items) {
+        cluster.clearLayers();
+        const bounds = [];
+
+        items.forEach(x => {
+            if (!x.lat || !x.lng) return;
+
+            const m = L.marker([x.lat, x.lng], { icon: circleIcon(catColor(x.category)) });
+
+            const img = x.imageUrl ? `<img src="${x.imageUrl}" style="width:100%;max-width:240px;border-radius:8px;margin-bottom:6px;" />` : '';
+            m.bindPopup(`
+                <div style="min-width:240px">
+                    ${img}
+                    <div style="font-weight:700;font-size:16px;">${x.title}</div>
+                    <div>Категорія: <b>${x.category}</b></div>
+                    <div>Рік: <b>${x.year}</b></div>
+                    <div style="margin-top:8px;">
+                        <a class="btn-gold" href="/Cars/Landing/${x.id}">Деталі</a>
+                    </div>
+                </div>
+            `);
+
+            cluster.addLayer(m);
+            bounds.push([x.lat, x.lng]);
+        });
+
+        if (bounds.length) map.fitBounds(bounds, { padding: [30, 30] });
+    }
+
+    
+    document.getElementById('applyBtn').addEventListener('click', loadData);
+    document.getElementById('resetBtn').addEventListener('click', () => {
+        document.getElementById('fCategory').value = '';
+        loadData();
+    });
+    document.getElementById('fitBtn').addEventListener('click', loadData);
+
+   
+    loadData();
+</script>
