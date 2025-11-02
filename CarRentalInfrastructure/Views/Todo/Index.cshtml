@@ -2,94 +2,255 @@
     ViewData["Title"] = "To-Do List";
 }
 
-<link rel="stylesheet" href="~/css/todo.css" />
-
 <div class="todo-wrapper">
-    <h2 class="todo-title">Мій To-Do List</h2>
+    <h2>📝 Завдання автопарку</h2>
 
-    <div class="todo-input-container">
-        <input type="text" id="taskInput" placeholder="Введіть завдання..." />
+    <!-- Панель введення -->
+    <div class="todo-input-area">
+        <input type="text" id="taskInput" placeholder="Нове завдання..." />
+        <input type="text" id="carInput" placeholder="Авто (наприклад: BMW X5, не обов’язково)" />
         <button id="addTaskBtn">Додати</button>
     </div>
 
-    <ul id="taskList"></ul>
+    <!-- Фільтри -->
+    <div class="todo-filters">
+        <select id="carFilter">
+            <option value="">Всі авто</option>
+        </select>
+        <button id="clearDoneBtn" class="muted">Очистити виконані</button>
+    </div>
+
+    <ul id="taskList" class="todo-list"></ul>
 </div>
 
+<style>
+    .todo-wrapper {
+        max-width: 700px;
+        margin: 40px auto;
+        background: #111;
+        color: #fff;
+        border-radius: 14px;
+        padding: 22px 26px;
+        box-shadow: 0 8px 26px rgba(0,0,0,.5)
+    }
+
+    .todo-input-area {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 12px
+    }
+
+        .todo-input-area input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #2b2b2b;
+            background: #0f0f0f;
+            color: #eee
+        }
+
+    #addTaskBtn {
+        background: #c89d5d;
+        color: #0b0b0b;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer
+    }
+
+    .todo-filters {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin: 8px 0 14px
+    }
+
+        .todo-filters select {
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid #2b2b2b;
+            background: #0f0f0f;
+            color: #eee
+        }
+
+    .muted {
+        background: #2b2b2b;
+        color: #eee;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 8px;
+        cursor: pointer
+    }
+
+    .todo-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 8px
+    }
+
+    .todo-item {
+        background: linear-gradient(180deg,#101010 0%,#151515 100%);
+        border: 1px solid rgba(255,255,255,.06);
+        border-radius: 10px;
+        padding: 10px 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: grab
+    }
+
+    .task-left {
+        display: flex;
+        align-items: center;
+        gap: 10px
+    }
+
+    .badge {
+        background: #c89d5d;
+        color: #000;
+        border-radius: 999px;
+        padding: 2px 10px;
+        font-size: 12px;
+        font-weight: 700
+    }
+
+    .done span {
+        color: #888;
+        text-decoration: line-through
+    }
+
+    .delete-btn {
+        background: transparent;
+        border: 1px solid rgba(200,157,93,.12);
+        color: #c89d5d;
+        padding: 6px 8px;
+        border-radius: 8px;
+        cursor: pointer
+    }
+    /* уникнути Razor-пастки: */
+    @@media (max-width:600px) {
+        .todo-input-area {
+            flex-direction: column
+        }
+    }
+</style>
+
 <script>
-    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    // --- Дані ---
+    const STORAGE_KEY = "tasks";
+    // міграція зі старого формату (коли task був просто {text, done})
+    let tasks = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]").map(t => ({
+      id: t.id ?? Date.now() + Math.random(),
+      text: t.text ?? String(t),
+      done: !!t.done,
+      carId: t.carId ?? null,
+      carTitle: t.carTitle ?? (t.carId ? `Авто #${t.carId}` : null)
+    }));
 
     const taskInput = document.getElementById("taskInput");
-    const taskList = document.getElementById("taskList");
-    const addTaskBtn = document.getElementById("addTaskBtn");
+    const carInput  = document.getElementById("carInput");
+    const addTaskBtn= document.getElementById("addTaskBtn");
+    const taskList  = document.getElementById("taskList");
+    const carFilter = document.getElementById("carFilter");
+    const clearDone = document.getElementById("clearDoneBtn");
 
-    function renderTasks() {
-        taskList.innerHTML = "";
-        tasks.forEach((task, index) => {
-            const li = document.createElement("li");
-            li.draggable = true;
-            li.classList.add("task-item");
-            li.setAttribute("data-index", index);
-            li.innerHTML = `
-                <div class="task-content">
-                    <input type="checkbox" ${task.done ? "checked" : ""} onchange="toggleTask(${index})">
-                    <span class="${task.done ? 'done' : ''}">${task.text}</span>
-                </div>
-                <button class="delete-btn" onclick="deleteTask(${index})">✖</button>
-            `;
-            taskList.appendChild(li);
-        });
-        localStorage.setItem("tasks", JSON.stringify(tasks));
-        addDragAndDrop();
+    // побудувати список авто у фільтрі
+    function buildCarFilter() {
+      const seen = new Set();
+      carFilter.innerHTML = '<option value="">Всі авто</option>';
+      tasks.forEach(t => {
+        if (t.carId && !seen.has(t.carId)) {
+          seen.add(t.carId);
+          const opt = document.createElement('option');
+          opt.value = String(t.carId);
+          opt.textContent = t.carTitle ?? `Авто #${t.carId}`;
+          carFilter.appendChild(opt);
+        }
+      });
     }
 
+    function save() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+      buildCarFilter();
+    }
+
+    // рендер
+    function render() {
+      taskList.innerHTML = "";
+      const filterCarId = carFilter.value ? Number(carFilter.value) : null;
+
+      tasks.forEach((t, index) => {
+        if (filterCarId && t.carId !== filterCarId) return;
+
+        const li = document.createElement("li");
+        li.className = "todo-item";
+        li.draggable = true;
+        li.dataset.index = index;
+
+        li.innerHTML = `
+          <div class="task-left ${t.done ? 'done' : ''}">
+            <input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTask(${index})">
+            <span>${escapeHtml(t.text)}</span>
+            ${t.carId ? `<a class="badge" href="/Cars/Landing/${t.carId}">${escapeHtml(t.carTitle ?? ('Авто #' + t.carId))}</a>` : ''}
+          </div>
+          <div>
+            <button class="delete-btn" onclick="deleteTask(${index})">✖</button>
+          </div>
+        `;
+
+        // drag-n-drop
+        li.addEventListener('dragstart', () => { li.classList.add('dragging'); });
+        li.addEventListener('dragend',   () => { li.classList.remove('dragging'); });
+        li.addEventListener('dragover', e => {
+          e.preventDefault();
+          const src = Number(document.querySelector('.dragging')?.dataset.index);
+          const dst = index;
+          if (Number.isFinite(src) && src !== dst) {
+            const [it] = tasks.splice(src, 1);
+            tasks.splice(dst, 0, it);
+            save(); render();
+          }
+        });
+
+        taskList.appendChild(li);
+      });
+
+      save();
+    }
+
+    // дії
     addTaskBtn.addEventListener("click", () => {
-        const text = taskInput.value.trim();
-        if (text !== "") {
-            tasks.push({ text: text, done: false });
-            taskInput.value = "";
-            renderTasks();
-        }
+      const text = taskInput.value.trim();
+      const carTitle = carInput.value.trim();
+      if (!text) return;
+
+      tasks.push({
+        id: Date.now(),
+        text,
+        done: false,
+        carId: null,
+        carTitle: carTitle || null
+      });
+      taskInput.value = "";
+      carInput.value  = "";
+      render();
     });
 
-    function toggleTask(index) {
-        tasks[index].done = !tasks[index].done;
-        renderTasks();
-    }
+    carFilter.addEventListener('change', render);
 
-    function deleteTask(index) {
-        tasks.splice(index, 1);
-        renderTasks();
-    }
+    clearDone.addEventListener('click', () => {
+      tasks = tasks.filter(t => !t.done);
+      render();
+    });
 
-    
-    function addDragAndDrop() {
-        const items = document.querySelectorAll(".task-item");
-        let dragged;
+    // інші утиліти
+    function toggleTask(i){ tasks[i].done = !tasks[i].done; render(); }
+    function deleteTask(i){ tasks.splice(i,1); render(); }
+    function escapeHtml(s){ return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#039;"); }
 
-        items.forEach(item => {
-            item.addEventListener("dragstart", e => {
-                dragged = item;
-                item.classList.add("dragging");
-            });
-
-            item.addEventListener("dragover", e => {
-                e.preventDefault();
-                const target = e.target.closest(".task-item");
-                if (target && target !== dragged) {
-                    const draggedIndex = +dragged.dataset.index;
-                    const targetIndex = +target.dataset.index;
-                    const temp = tasks[draggedIndex];
-                    tasks.splice(draggedIndex, 1);
-                    tasks.splice(targetIndex, 0, temp);
-                    renderTasks();
-                }
-            });
-
-            item.addEventListener("dragend", () => {
-                dragged.classList.remove("dragging");
-            });
-        });
-    }
-
-    renderTasks();
+    // старт
+    render();
 </script>

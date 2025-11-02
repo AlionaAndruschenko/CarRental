@@ -126,6 +126,33 @@
     </div>
 </footer>
 
+<a class="btn btn-warning" href="javascript:void(0)"
+   onclick="addTodoForCar(@Model.Id, '@(Model.Make + " " + Model.Model)')">
+    Додати завдання для цього авто
+</a>
+
+@section Scripts {
+    <script>
+        function addTodoForCar(carId, carTitle) {
+          const key = "tasks";
+          const tasks = JSON.parse(localStorage.getItem(key) || "[]");
+
+          const text = prompt(`Опис завдання для ${carTitle}:`, "Провести ТО / замінити масло / перевірити страховку");
+          if (!text || !text.trim()) return;
+
+          tasks.push({
+            id: Date.now(),
+            text: text.trim(),
+            done: false,
+            carId: carId,
+            carTitle: carTitle
+          });
+
+          localStorage.setItem(key, JSON.stringify(tasks));
+          window.location.href = '/Todo/Index';
+        }
+    </script>
+}
 
 <a href="#contact" class="position-fixed bottom-0 end-0 m-3 btn btn-gold btn-lg shadow">Зв’язатись</a>
 <style>
