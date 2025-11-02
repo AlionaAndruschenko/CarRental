@@ -5,14 +5,14 @@
 <div class="todo-wrapper">
     <h2>📝 Завдання автопарку</h2>
 
-    <!-- Панель введення -->
+   
     <div class="todo-input-area">
         <input type="text" id="taskInput" placeholder="Нове завдання..." />
         <input type="text" id="carInput" placeholder="Авто (наприклад: BMW X5, не обов’язково)" />
         <button id="addTaskBtn">Додати</button>
     </div>
 
-    <!-- Фільтри -->
+   
     <div class="todo-filters">
         <select id="carFilter">
             <option value="">Всі авто</option>
@@ -130,7 +130,7 @@
         border-radius: 8px;
         cursor: pointer
     }
-    /* уникнути Razor-пастки: */
+  
     @@media (max-width:600px) {
         .todo-input-area {
             flex-direction: column
@@ -139,9 +139,9 @@
 </style>
 
 <script>
-    // --- Дані ---
+    
     const STORAGE_KEY = "tasks";
-    // міграція зі старого формату (коли task був просто {text, done})
+   
     let tasks = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]").map(t => ({
       id: t.id ?? Date.now() + Math.random(),
       text: t.text ?? String(t),
@@ -157,7 +157,6 @@
     const carFilter = document.getElementById("carFilter");
     const clearDone = document.getElementById("clearDoneBtn");
 
-    // побудувати список авто у фільтрі
     function buildCarFilter() {
       const seen = new Set();
       carFilter.innerHTML = '<option value="">Всі авто</option>';
@@ -177,7 +176,7 @@
       buildCarFilter();
     }
 
-    // рендер
+    
     function render() {
       taskList.innerHTML = "";
       const filterCarId = carFilter.value ? Number(carFilter.value) : null;
@@ -201,7 +200,7 @@
           </div>
         `;
 
-        // drag-n-drop
+       
         li.addEventListener('dragstart', () => { li.classList.add('dragging'); });
         li.addEventListener('dragend',   () => { li.classList.remove('dragging'); });
         li.addEventListener('dragover', e => {
@@ -221,7 +220,7 @@
       save();
     }
 
-    // дії
+    
     addTaskBtn.addEventListener("click", () => {
       const text = taskInput.value.trim();
       const carTitle = carInput.value.trim();
@@ -246,11 +245,11 @@
       render();
     });
 
-    // інші утиліти
+   
     function toggleTask(i){ tasks[i].done = !tasks[i].done; render(); }
     function deleteTask(i){ tasks.splice(i,1); render(); }
     function escapeHtml(s){ return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#039;"); }
 
-    // старт
+    
     render();
 </script>

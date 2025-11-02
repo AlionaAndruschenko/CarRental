@@ -235,7 +235,7 @@ namespace CarRentalInfrastructure.Controllers
             return View();
         }
 
-        // GET: /Cars/Locations?category=Premium
+        
         [HttpGet]
         public async Task<IActionResult> Locations(string? category)
         {
@@ -244,7 +244,7 @@ namespace CarRentalInfrastructure.Controllers
                 .AsNoTracking()
                 .AsQueryable();
 
-            // лише ті, що мають координати
+         
             q = q.Where(c => c.Latitude != null && c.Longitude != null);
 
             if (!string.IsNullOrWhiteSpace(category))
