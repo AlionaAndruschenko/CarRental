@@ -17,11 +17,7 @@ builder.Services.AddDbContext<CarRentalDbContext>(option => option.UseSqlServer(
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<CarRentalDbContext>();
-    db.Database.Migrate(); 
-}
+
 
 if (!app.Environment.IsDevelopment())
 {
