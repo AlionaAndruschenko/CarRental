@@ -10,12 +10,12 @@ builder.Services.Configure<TelegramBotOptions>(
 builder.Services.AddHttpClient<TelegramBotService>();
 
 builder.Services.AddControllersWithViews();
-builder.Services.AddDbContext<CarRentalDbContext>(option => option.UseSqlServer(
-    builder.Configuration.GetConnectionString("DefaultConnection")
-    ));
+builder.Services.AddDbContext<CarRentalDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
 var app = builder.Build();
+
 
 
 
